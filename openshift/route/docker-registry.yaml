@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Route
+metadata:
+  creationTimestamp: null
+  labels:
+    docker-registry: default
+  name: docker-registry
+  namespace: default
+spec:
+  host: docker-registry.d2o.vgnt
+  port:
+    targetPort: 5000-tcp
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: docker-registry

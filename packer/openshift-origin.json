@@ -1,0 +1,98 @@
+{
+  "description": "OpenShift Origin based on CentOS 7 x86_64",
+  "push": {
+    "name": "webdizz/openshift-origin",
+    "vcs": true
+  },
+  "variables": {
+    "atlas_user": "webdizz",
+    "atlas_box": "openshift-origin"
+  },
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/fix-slow-dns.sh",
+        "scripts/sshd.sh",
+        "scripts/update.sh",
+        "scripts/sudoers.sh",
+        "scripts/vagrant.sh",
+        "scripts/docker.sh",
+        "scripts/openshift-origin-installation.sh",
+        "scripts/virtualbox.sh",
+        "scripts/ansible.sh",
+        "scripts/java.sh",
+        "scripts/motd.sh",
+        "scripts/cleanup.sh"
+      ],
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    }
+  ],
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ],
+      "headless": true,
+      "boot_wait": "10s",
+      "disk_size": 60520,
+      "guest_os_type": "RedHat_64",
+      "http_directory": "http",
+      "iso_url": "http://mirror.netcologne.de/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso",
+      "iso_checksum": "f90e4d28fa377669b2db16cbcb451fcb9a89d2460e3645993e30e137ac37d284",
+      "iso_checksum_type": "sha256",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "echo '/sbin/halt -h -p' > /tmp/shutdown.sh; echo 'vagrant'|sudo -S sh '/tmp/shutdown.sh'",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "virtualbox_version_file": ".vbox_version",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "2048"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ]
+      ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant",
+        "keep_input_artifact": false,
+        "override": {
+          "virtualbox": {
+            "output": "openshift-origin-centos-7-x64-virtualbox.box"
+          }
+        }
+      },
+      {
+        "type": "atlas",
+        "only": [
+          "virtualbox-iso"
+        ],
+        "artifact": "{{user `atlas_user`}}/{{user `atlas_box`}}",
+        "artifact_type": "vagrant.box",
+        "metadata": {
+          "provider": "virtualbox",
+          "description": "[OpenShift](http://openshift.org) Origin on [CentOS](http://centos.org) v7 x86_64",
+          "version": "1.0.14"
+        }
+      }
+    ]
+  ]
+}

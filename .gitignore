@@ -12,3 +12,5 @@ gradle-app.setting
 
 *.docx
 .vagrant/
+box
+output-centos72-docker-virtualbox-iso/
