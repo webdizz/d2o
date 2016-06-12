@@ -9,6 +9,7 @@ vm_ip = "192.168.33.77"
 
 if windows
   required_plugins << 'vagrant-hostmanager'
+  required_plugins << 'vagrant-multi-putty'
 else
   required_plugins << 'landrush'
 end
