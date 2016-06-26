@@ -1,0 +1,19 @@
+kind: "BuildConfig"
+apiVersion: "v1"
+metadata:
+  name: "build-java8"
+spec:
+  source:
+    type: Git
+    git:
+      uri: 'https://github.com/webdizz/d2o.git'
+      ref: master
+    contextDir: docker/java8
+  strategy:
+    type: "Docker"
+  output:
+    to:
+      kind: "DockerImage"
+      name: "docker-registry.d2o.vgnt/default/java8:latest"
+    pushSecret:
+      name: "docker-registry-auth"
