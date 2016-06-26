@@ -54,10 +54,16 @@ Vagrant.configure(2) do |config|
     run: "once",
     path: "packer/scripts/openshift-origin-installation.sh"
 
+  $script = <<SCRIPT
+    docker pull buildpack-deps:trusty-curl
+    docker pull httpd
+    docker pull nginx
+SCRIPT
+
   config.vm.provision "shell",
     privileged: true,
     run: "once",
-    inline: "docker pull buildpack-deps:trusty-curl"
+    inline: $script
 
     config.vm.post_up_message = "
     export DOCKER_HOST=tcp://#{vm_ip}:2375
